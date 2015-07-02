@@ -1,5 +1,6 @@
 #ifndef krnl_file_h
 #define krnl_file_h
+#include "../gnrc/types.h"
 
 #include "file_structs.h"
 

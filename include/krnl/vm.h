@@ -1,5 +1,6 @@
 #ifndef krnl_vm_h
 #define krnl_vm_h
+#include "../gnrc/types.h"
 
 #include "proc.h"
 #include "file_structs.h"

@@ -1,5 +1,6 @@
 #ifndef krnl_proc_h
 #define krnl_proc_h
+#include "../gnrc/types.h"
 
 #include "spinlock.h"
 

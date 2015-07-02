@@ -1,5 +1,6 @@
 #ifndef krnl_string_h
 #define krnl_string_h
+#include "../gnrc/types.h"
 
 // string.c
 int             memcmp(const void*, const void*, uint);

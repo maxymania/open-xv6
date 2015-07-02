@@ -1,5 +1,6 @@
 #ifndef krnl_lapic_h
 #define krnl_lapic_h
+#include "../gnrc/types.h"
 
 // lapic.c
 int             cpunum(void);

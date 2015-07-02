@@ -1,5 +1,6 @@
 #ifndef krnl_pipe_h
 #define krnl_pipe_h
+#include "../gnrc/types.h"
 
 #include "file_structs.h"
 

@@ -1,5 +1,6 @@
 #ifndef krnl_ide_h
 #define krnl_ide_h
+#include "../gnrc/types.h"
 
 /*
  * depends on bio.h

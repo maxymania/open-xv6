@@ -1,5 +1,6 @@
 #ifndef krnl_spinlock_h
 #define krnl_spinlock_h
+#include "../gnrc/types.h"
 
 struct spinlock;
 

@@ -1,5 +1,6 @@
 #ifndef krnl_bio_h
 #define krnl_bio_h
+#include "../gnrc/types.h"
 
 struct buf;
 

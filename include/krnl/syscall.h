@@ -1,5 +1,6 @@
 #ifndef krnl_syscall_h
 #define krnl_syscall_h
+#include "../gnrc/types.h"
 
 // syscall.c
 int             argint(int, int*);
