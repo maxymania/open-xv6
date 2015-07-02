@@ -23,15 +23,20 @@
  *
  */
 
-#include "types.h"
-#include "defs.h"
+//#include "krnl/kdefs.h"
+#include "gnrc/types.h"
+#include "krnl/string.h"
+#include "krnl/console.h"
+#include "krnl/lapic.h"
+
 #include "param.h"
 #include "memlayout.h"
 #include "mp.h"
 #include "x86.h"
 #include "mmu.h"
 #include "proc.h"
-#include "acpi.h"
+
+#include "gnrc/acpi.h"
 
 extern struct cpu cpus[NCPU];
 extern int ismp;

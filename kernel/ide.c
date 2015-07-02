@@ -1,7 +1,14 @@
 // Simple PIO-based (non-DMA) IDE driver code.
 
-#include "types.h"
-#include "defs.h"
+#include "krnl/ide.h"
+#include "krnl/bio.h"
+#include "krnl/spinlock.h"
+#include "krnl/picirq.h"
+#include "krnl/ioapic.h"
+#include "krnl/console.h"
+#include "krnl/proc.h"
+//#include "types.h"
+//#include "defs.h"
 #include "param.h"
 #include "memlayout.h"
 #include "mmu.h"

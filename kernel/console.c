@@ -4,8 +4,14 @@
 
 #include <stdarg.h>
 
-#include "types.h"
-#include "defs.h"
+#include "krnl/console.h"
+#include "krnl/spinlock.h"
+#include "krnl/string.h"
+#include "krnl/uart.h"
+#include "krnl/proc.h"
+#include "krnl/fs.h"
+#include "krnl/ioapic.h"
+#include "krnl/picirq.h"
 #include "param.h"
 #include "traps.h"
 #include "spinlock.h"

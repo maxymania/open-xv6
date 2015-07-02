@@ -1,3 +1,6 @@
+#ifndef GNRC_ACPI_H
+#define GNRC_ACPI_H
+
 // References: ACPI 5.0 Errata A
 // http://acpi.info/spec.htm
 
@@ -69,4 +72,5 @@ struct madt_ioapic {
   uint32 interrupt_base;
 } __attribute__((__packed__));
   
+#endif
 

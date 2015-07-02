@@ -1,4 +1,4 @@
-#include "types.h"
+#include "krnl/exec.h"
 #include "param.h"
 #include "memlayout.h"
 #include "mmu.h"
