@@ -24,6 +24,7 @@
  */
 
 //#include "krnl/kdefs.h"
+#include "krnl/acpi.h"
 #include "gnrc/types.h"
 #include "krnl/string.h"
 #include "krnl/console.h"
