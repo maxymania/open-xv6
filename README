@@ -1,11 +1,11 @@
+This is a Hobby OS targeting AMD64 derived from xv6
 
-This is a port of xv6 to the x86-64 platform (from i386), attempting to
-be as minimally intrusive as possible (beyond some initial reorganization
-of the source code layout and build system).
+Specifically the the AMD64 port of xv6 found here: https://github.com/swetland/xv6
 
-  "xv6 is a re-implementation of Dennis Ritchie's and Ken Thompson's Unix
-   Version 6 (v6).  xv6 loosely follows the structure and style of v6,
-   but is implemented for a modern x86-based multiprocessor using ANSI C."
+I am not attempting to be as minimally intrusive as possible. Instead i try to make
+xv6 better somehow.
+
+--------------------------------------------------------------------------------
 
 The original upstream branch (mirror) was pulled from the git repository
 git://pdos.csail.mit.edu/xv6/xv6.git
@@ -21,7 +21,15 @@ this working branch and any local changes as the original project and to
 hopefully avoid people pestering the original authors about bugs I may introduce
 while poking at their code.
 
-. . .
+--------------------------
+
+README.64BIT contains notes about the 64bit port.
+
+-------------------------------------------
+
+Code organisation
+
+swetland (https://github.com/swetland):
 
 The code has been organized into kernel/, include/, user/, ulib/, and tools/
 subdirectories, and arranged so that the build puts intermediate object files
@@ -31,4 +39,14 @@ filesystem contents into fs/.
 The Makefile defaults to building the 32bit version of xv6.  Define the X64
 environment variable to build the 64bit version.
 
-README.64BIT contains notes about the 64bit port.
+
+Me:
+
+How the code within include/ has been organized:
+include/defs.h -> include/krnl/kdefs.h
+include/krnl/kdefs.h -> include/krnl/acpi.h, include/krnl/bio.h, ........
+include/types.h -> include/gnrc/types.h
+include/acpi.h -> include/gnrc/acpi.h
+more stuff to be moved!
+
+
