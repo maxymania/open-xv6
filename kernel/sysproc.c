@@ -1,6 +1,8 @@
-#include "types.h"
+#include "krnl/syscall.h"
+#include "krnl/proc.h"
+#include "krnl/trap.h"
+
 #include "x86.h"
-#include "defs.h"
 #include "param.h"
 #include "memlayout.h"
 #include "mmu.h"

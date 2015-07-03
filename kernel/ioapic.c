@@ -2,8 +2,10 @@
 // http://www.intel.com/design/chipsets/datashts/29056601.pdf
 // See also picirq.c.
 
-#include "types.h"
-#include "defs.h"
+#include "gnrc/types.h"
+#include "krnl/ioapic.h"
+#include "krnl/mp.h"
+#include "krnl/console.h"
 #include "traps.h"
 #include "memlayout.h"
 

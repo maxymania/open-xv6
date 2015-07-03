@@ -1,6 +1,6 @@
 // Intel 8259A programmable interrupt controllers.
 
-#include "types.h"
+#include "gnrc/types.h"
 #include "x86.h"
 #include "traps.h"
 

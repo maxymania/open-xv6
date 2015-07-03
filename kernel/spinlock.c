@@ -1,7 +1,7 @@
 // Mutual exclusion spin locks.
 
-#include "types.h"
-#include "defs.h"
+#include "krnl/spinlock.h"
+#include "krnl/console.h"
 #include "param.h"
 #include "x86.h"
 #include "memlayout.h"

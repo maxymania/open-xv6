@@ -1,7 +1,10 @@
 // Intel 8250 serial port (UART).
 
-#include "types.h"
-#include "defs.h"
+#include "krnl/uart.h"
+#include "krnl/picirq.h"
+#include "krnl/lapic.h"
+#include "krnl/ioapic.h"
+#include "krnl/console.h"
 #include "param.h"
 #include "traps.h"
 #include "spinlock.h"

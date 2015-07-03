@@ -1,6 +1,6 @@
-#include "types.h"
+#include "krnl/kbd.h"
+#include "krnl/console.h"
 #include "x86.h"
-#include "defs.h"
 #include "kbd.h"
 
 int

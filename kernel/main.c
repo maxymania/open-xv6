@@ -1,5 +1,4 @@
-#include "types.h"
-#include "defs.h"
+#include "krnl/kdefs.h"
 #include "param.h"
 #include "memlayout.h"
 #include "mmu.h"

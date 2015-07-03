@@ -4,8 +4,15 @@
 // user code, and calls into file.c and fs.c.
 //
 
-#include "types.h"
-#include "defs.h"
+#include "krnl/syscall.h"
+#include "krnl/exec.h"
+#include "krnl/file.h"
+#include "krnl/pipe.h"
+#include "krnl/fs.h"
+#include "krnl/log.h"
+#include "krnl/console.h"
+#include "krnl/string.h"
+#include "krnl/header_only.h"
 #include "param.h"
 #include "stat.h"
 #include "mmu.h"

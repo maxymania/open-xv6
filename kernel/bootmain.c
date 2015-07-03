@@ -5,7 +5,7 @@
 // bootmain() loads a multiboot kernel image from the disk starting at
 // sector 1 and then jumps to the kernel entry routine.
 
-#include "types.h"
+#include "gnrc/types.h"
 #include "x86.h"
 #include "memlayout.h"
 

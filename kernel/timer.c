@@ -2,8 +2,8 @@
 // Only used on uniprocessors;
 // SMP machines use the local APIC timer.
 
-#include "types.h"
-#include "defs.h"
+#include "krnl/timer.h"
+#include "krnl/picirq.h"
 #include "traps.h"
 #include "x86.h"
 

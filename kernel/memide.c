@@ -1,8 +1,10 @@
 // Fake IDE disk; stores blocks in memory.
 // Useful for running kernel without scratch disk.
 
-#include "types.h"
-#include "defs.h"
+#include "krnl/ide.h"
+#include "krnl/console.h"
+#include "krnl/string.h"
+
 #include "param.h"
 #include "mmu.h"
 #include "proc.h"

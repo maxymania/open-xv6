@@ -1,5 +1,9 @@
-#include "types.h"
-#include "defs.h"
+
+/*
+ * As we pull almost everything in here, we pull in the entire kernel API
+ */
+#include "krnl/kdefs.h"
+
 #include "param.h"
 #include "memlayout.h"
 #include "mmu.h"

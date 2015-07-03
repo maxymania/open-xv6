@@ -23,9 +23,13 @@
  *
  */
 
+#include "krnl/vm.h"
+#include "krnl/kalloc.h"
+#include "krnl/string.h"
+#include "krnl/lapic.h"
+#include "krnl/console.h"
+
 #include "param.h"
-#include "types.h"
-#include "defs.h"
 #include "x86.h"
 #include "memlayout.h"
 #include "mmu.h"

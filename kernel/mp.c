@@ -2,8 +2,10 @@
 // Search memory for MP description structures.
 // http://developer.intel.com/design/pentium/datashts/24201606.pdf
 
-#include "types.h"
-#include "defs.h"
+#include "krnl/mp.h"
+#include "krnl/string.h"
+#include "krnl/lapic.h"
+#include "krnl/console.h"
 #include "param.h"
 #include "memlayout.h"
 #include "mp.h"

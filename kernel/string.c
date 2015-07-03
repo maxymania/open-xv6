@@ -1,4 +1,4 @@
-#include "types.h"
+#include "gnrc/types.h"
 #include "x86.h"
 
 void*
