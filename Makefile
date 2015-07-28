@@ -1,5 +1,7 @@
 -include local.mk
 
+X64=1
+
 ifneq ("$(X64)","")
 BITS = 64
 XOBJS = kobj/vm64.o
@@ -74,7 +76,10 @@ TOOLPREFIX := $(shell if i386-jos-elf-objdump -i 2>&1 | grep '^elf32-i386$$' >/d
 endif
 
 # If the makefile can't find QEMU, specify its path here
-#QEMU = 
+#QEMU = qemu-system-X86_64
+ifneq ("$(X64)","")
+QEMU = qemu-system-x86_64
+endif
 
 # Try to infer the correct QEMU
 ifndef QEMU
