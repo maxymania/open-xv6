@@ -44,6 +44,7 @@ OBJS := \
 	kobj/uart.o\
 	kobj/vectors.o\
 	kobj/vm.o\
+	kobj/libqueue/queue.o\
 	$(XOBJS)
 
 ifneq ("$(MEMFS)","")
@@ -114,6 +115,13 @@ xv6memfs.img: out/bootblock out/kernelmemfs.elf
 	dd if=/dev/zero of=xv6memfs.img count=10000
 	dd if=out/bootblock of=xv6memfs.img conv=notrunc
 	dd if=out/kernelmemfs.elf of=xv6memfs.img seek=1 conv=notrunc
+
+# kernel lib object files
+kobj/libqueue/%.o: kernel/libqueue/%.c
+	@mkdir -p kobj
+	@mkdir -p kobj/libqueue
+	$(CC) $(CFLAGS) -c -o $@ $<
+
 
 # kernel object files
 kobj/%.o: kernel/%.c
