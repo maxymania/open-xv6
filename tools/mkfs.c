@@ -66,8 +66,11 @@ main(int argc, char *argv[])
   char buf[512];
   struct dinode din;
 
-
-  static_assert(sizeof(int) == 4, "Integers must be 4 bytes!");
+  if(sizeof(int) != 4){
+	printf("Integers must be 4 bytes! sizeof(int) == %d",(int)sizeof(int));
+	return -1;
+  }
+  //static_assert(sizeof(int) == 4, "Integers must be 4 bytes!");
 
   if(argc < 2){
     fprintf(stderr, "Usage: mkfs fs.img files...\n");
