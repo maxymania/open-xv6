@@ -7,7 +7,7 @@ int lq_new(struct lq_queue* queue){
 	struct spinlock* lock = (struct spinlock*)kalloc();
 	if(lock==0) return -1;
 	initlock(lock,"libqueue");
-	*queue = (struct lq_queue){lock,0,0};
+	*queue = (struct lq_queue){lock,0,0,0};
 	return 0;
 }
 void lq_destroy(struct lq_queue* queue){
@@ -22,6 +22,7 @@ void lq_put(struct lq_queue* queue, struct lq_elem* elem){
 		queue->tail->next = elem;
 		queue->tail = elem;
 	}
+	queue->count++;
 	release((queue->lock));
 }
 struct lq_elem* lq_get(struct lq_queue* queue){
@@ -33,6 +34,7 @@ struct lq_elem* lq_get(struct lq_queue* queue){
 			queue->head = queue->tail=0;
 		else
 			queue->head = elem->next;
+		queue->count--;
 	}
 	release(queue->lock);
 	return elem;

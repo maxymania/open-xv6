@@ -12,6 +12,7 @@ struct lq_queue {
 	struct spinlock *lock;
 	struct lq_elem* head;
 	struct lq_elem* tail;
+	long long int count;
 };
 
 // Returns ==0 on success and !=0 on error.
