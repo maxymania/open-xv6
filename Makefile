@@ -220,6 +220,7 @@ UPROGS=\
 	fs/usertests\
 	fs/wc\
 	fs/zombie\
+	fs/makesegfault\
 
 fs/README: README
 	@mkdir -p fs
