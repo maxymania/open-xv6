@@ -5,6 +5,9 @@ Specifically the the AMD64 port of xv6 found here: https://github.com/swetland/x
 I am not attempting to be as minimally intrusive as possible. Instead i try to make
 xv6 better somehow.
 
+Gerrithub Repository:
+https://review.gerrithub.io/maxymania/open-xv6
+
 --------------------------------------------------------------------------------
 
 The original upstream branch (mirror) was pulled from the git repository
