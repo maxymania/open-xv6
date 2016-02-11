@@ -2,6 +2,7 @@
 #define krnl_fs_h
 #include "../gnrc/types.h"
 
+#include "fsll.h"
 #include "file_structs.h"
 
 struct superblock;
@@ -12,6 +13,7 @@ int             dirlink(struct inode*, char*, uint);
 struct inode*   dirlookup(struct inode*, char*, uint*);
 struct inode*   ialloc(uint, short);
 struct inode*   idup(struct inode*);
+struct inode*   iget(uint dev, uint inum);
 void            iinit(void);
 void            ilock(struct inode*);
 void            iput(struct inode*);
