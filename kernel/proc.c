@@ -9,6 +9,9 @@
 #include <krnl/spinlock.h>
 #endif
 
+#include <gnrc/aptable.h>
+#include <gnrc/aptable_s.h>
+
 #include <param.h>
 #include <memlayout.h>
 #include <mmu.h>

@@ -1,3 +1,4 @@
+#include <gnrc/aptable.h>
 // Segments in proc->gdt.
 #define NSEGS     7
 
@@ -77,7 +78,8 @@ enum procstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 // Per-process state
 struct proc {
   uintp sz;                     // Size of process memory (bytes)
-  pde_t* pgdir;                // Page table
+  pde_t* pgdir;                // Page table (old)
+  pagetab_t* pagetable;        // Page table (modern)
   char *kstack;                // Bottom of kernel stack for this process
   enum procstate state;        // Process state
   volatile int pid;            // Process ID

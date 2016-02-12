@@ -29,6 +29,9 @@
 #include <krnl/lapic.h>
 #include <krnl/console.h>
 
+#include <gnrc/aptable.h>
+#include <gnrc/aptable_s.h>
+
 #include <param.h>
 #include <x86.h>
 #include <memlayout.h>
@@ -150,6 +153,16 @@ setupkvm(void)
 
   return pgdir;
 };
+
+pagetab_t*
+setupkvm_v2(void)
+{
+  pagetab_t* pt = (pagetab_t*)kalloc();
+  if(pt)
+    pt->pgdir = setupkvm();
+  return pt;
+};
+
 
 // Allocate one page table for the machine for the kernel address
 // space for scheduler processes.

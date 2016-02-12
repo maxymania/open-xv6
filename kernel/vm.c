@@ -11,6 +11,9 @@
 #include <proc.h>
 #include <elf.h>
 
+#include <gnrc/aptable.h>
+#include <gnrc/aptable_s.h>
+
 extern char data[];  // defined by kernel.ld
 pde_t *kpgdir;  // for use in scheduler()
 struct segdesc gdt[NSEGS];
@@ -115,6 +118,10 @@ inituvm(pde_t *pgdir, char *init, uint sz)
   mappages(pgdir, 0, PGSIZE, v2p(mem), PTE_W|PTE_U);
   memmove(mem, init, sz);
 }
+void
+inituvm_v2(pagetab_t* tab, char *init, uint sz){
+	inituvm(tab->pgdir,init,sz);
+}
 
 // Load a program segment into pgdir.  addr must be page-aligned
 // and the pages from addr to addr+sz must already be mapped.
@@ -138,6 +145,11 @@ loaduvm(pde_t *pgdir, char *addr, struct inode *ip, uint offset, uint sz)
       return -1;
   }
   return 0;
+}
+int
+loaduvm_v2(pagetab_t* tab, char *addr, struct inode *ip, uint offset, uint sz)
+{
+	return loaduvm(tab->pgdir,addr,ip,offset,sz);
 }
 
 // Allocate page tables and physical memory to grow process from oldsz to
@@ -165,6 +177,10 @@ allocuvm(pde_t *pgdir, uint oldsz, uint newsz)
     mappages(pgdir, (char*)a, PGSIZE, v2p(mem), PTE_W|PTE_U);
   }
   return newsz;
+}
+int
+allocuvm_v2(pagetab_t *tab, uint oldsz, uint newsz){
+	return allocuvm(tab->pgdir,oldsz,newsz);
 }
 
 // Deallocate user pages to bring the process size from oldsz to
@@ -197,6 +213,11 @@ deallocuvm(pde_t *pgdir, uintp oldsz, uintp newsz)
   }
   return newsz;
 }
+int
+deallocuvm_v2(pagetab_t* tab, uintp oldsz, uintp newsz){
+	return deallocuvm(tab->pgdir,oldsz,newsz);
+}
+
 
 // Free a page table and all the physical memory pages
 // in the user part.
@@ -215,6 +236,11 @@ freevm(pde_t *pgdir)
   }
   kfree((char*)pgdir);
 }
+void
+freevm_v2(pagetab_t* tab){
+	freevm(tab->pgdir);
+	kfree(tab);
+}
 
 // Clear PTE_U on a page. Used to create an inaccessible
 // page beneath the user stack.
@@ -227,6 +253,11 @@ clearpteu(pde_t *pgdir, char *uva)
   if(pte == 0)
     panic("clearpteu");
   *pte &= ~PTE_U;
+}
+void
+clearpteu_v2(pagetab_t *tab, char *uva)
+{
+	clearpteu(tab->pgdir,uva);
 }
 
 // Given a parent process's page table, create a copy
@@ -262,6 +293,14 @@ bad:
   freevm(d);
   return 0;
 }
+pagetab_t*
+copyuvm_v2(pagetab_t* tab, uint sz){
+	// TODO: move it all over here
+	pagetab_t* pt = (pagetab_t*)kalloc();
+	if(pt==0)return 0;
+	pt->pgdir = copyuvm(tab->pgdir,sz);
+	return pt;
+}
 
 //PAGEBREAK!
 // Map user virtual address to kernel address.
@@ -276,6 +315,11 @@ uva2ka(pde_t *pgdir, char *uva)
   if((*pte & PTE_U) == 0)
     return 0;
   return (char*)p2v(PTE_ADDR(*pte));
+}
+
+char*
+uva2ka_v2(pagetab_t* tab, char* uva){
+	return uva2ka(tab->pgdir,uva);
 }
 
 // Copy len bytes from p to user address va in page table pgdir.
@@ -303,4 +347,25 @@ copyout(pde_t *pgdir, uint va, void *p, uint len)
   }
   return 0;
 }
+int
+copyout_v2(pagetab_t* tab, uint va, void* p, uint len)
+{
+  char *buf, *pa0;
+  uintp n, va0;
 
+  buf = (char*)p;
+  while(len > 0){
+    va0 = (uint)PGROUNDDOWN(va);
+    pa0 = uva2ka_v2(tab, (char*)va0);
+    if(pa0 == 0)
+      return -1;
+    n = PGSIZE - (va - va0);
+    if(n > len)
+      n = len;
+    memmove(pa0 + (va - va0), buf, n);
+    len -= n;
+    buf += n;
+    va = va0 + PGSIZE;
+  }
+  return 0;
+}
