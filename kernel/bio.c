@@ -1,5 +1,6 @@
 /* 
  *
+ * Copyright (c) 2016 Simon Schmidt
  * Copyright (c) 2006-2009 Frans Kaashoek, Robert Morris, Russ Cox,
  *                         Massachusetts Institute of Technology
  * 
@@ -76,6 +77,7 @@ binit(void)
     b->next = bcache.head.next;
     b->prev = &bcache.head;
     b->dev = -1;
+    b->bqueue = 0;
     bcache.head.next->prev = b;
     bcache.head.next = b;
   }
@@ -100,7 +102,7 @@ bget(uint dev, uint sector)
         release(&bcache.lock);
         return b;
       }
-      sleep(b, &bcache.lock);
+      sleep_v2(&b->bqueue, &bcache.lock);
       goto loop;
     }
   }
@@ -158,7 +160,7 @@ brelse(struct buf *b)
   bcache.head.next = b;
 
   b->flags &= ~B_BUSY;
-  wakeup(b);
+  wakeup_v2(&b->bqueue);
 
   release(&bcache.lock);
 }
