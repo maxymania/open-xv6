@@ -11,7 +11,7 @@
 #include "lapic.h"
 #include "log.h"
 #include "mp.h"
-#include "apic.h"
+#include "acpi.h"
 #include "picirq.h"
 #include "pipe.h"
 #include "proc.h"

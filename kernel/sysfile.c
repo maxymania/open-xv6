@@ -13,12 +13,12 @@
 #include "krnl/console.h"
 #include "krnl/string.h"
 #include "krnl/header_only.h"
+#include "krnl/inode.h"
 #include "param.h"
 #include "stat.h"
 #include "mmu.h"
 #include "proc.h"
 #include "fs.h"
-#include "file.h"
 #include "fcntl.h"
 
 // Fetch the nth word-sized system call argument as a file descriptor

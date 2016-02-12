@@ -26,8 +26,6 @@
 #include "krnl/spinlock.h"
 #include "krnl/proc.h"
 #include "param.h"
-#include "spinlock.h"
-#include "buf.h"
 
 struct {
   struct spinlock lock;

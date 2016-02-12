@@ -1,5 +1,7 @@
 #ifndef krnl_inode_h
 #define krnl_inode_h
+#include "../fs.h"
+
 struct file {
   enum { FD_NONE, FD_PIPE, FD_INODE } type;
   int ref; // reference count

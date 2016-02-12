@@ -17,14 +17,12 @@
 #include "krnl/console.h"
 #include "krnl/spinlock.h"
 #include "krnl/proc.h"
+#include "krnl/inode.h"
 #include "param.h"
 #include "stat.h"
 #include "mmu.h"
 #include "proc.h"
-#include "spinlock.h"
-#include "buf.h"
 #include "fs.h"
-#include "file.h"
 
 #define min(a, b) ((a) < (b) ? (a) : (b))
 static void itrunc(struct inode*);

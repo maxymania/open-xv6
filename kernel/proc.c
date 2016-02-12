@@ -4,12 +4,17 @@
  */
 #include "krnl/kdefs.h"
 
+/* listup all includes, possibly get rid of krnl/kdefs.h */
+#if 0
+#include "krnl/spinlock.h"
+#endif
+
 #include "param.h"
 #include "memlayout.h"
 #include "mmu.h"
 #include "x86.h"
 #include "proc.h"
-#include "spinlock.h"
+
 
 struct {
   struct spinlock lock;

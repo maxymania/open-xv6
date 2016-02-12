@@ -11,6 +11,7 @@
 #include "krnl/kbd.h"
 #include "krnl/uart.h"
 #include "krnl/console.h"
+#include "krnl/spinlock.h"
 
 #include "param.h"
 #include "memlayout.h"
@@ -18,7 +19,6 @@
 #include "proc.h"
 #include "x86.h"
 #include "traps.h"
-#include "spinlock.h"
 
 // Interrupt descriptor table (shared by all CPUs).
 struct gatedesc idt[256];
