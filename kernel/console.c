@@ -198,6 +198,7 @@ struct {
   uint r;  // Read index
   uint w;  // Write index
   uint e;  // Edit index
+  struct proc* rr;
 } input;
 
 #define C(x)  ((x)-'@')  // Control-x
@@ -236,7 +237,7 @@ consoleintr(int (*getc)(void))
         consputc(c);
         if(c == '\n' || c == C('D') || input.e == input.r+INPUT_BUF){
           input.w = input.e;
-          wakeup(&input.r);
+          wakeup_v2(&input.rr);
         }
       }
       break;
@@ -261,7 +262,7 @@ consoleread(struct inode *ip, char *dst, int n)
         ilock(ip);
         return -1;
       }
-      sleep(&input.r, &input.lock);
+      sleep_v2(&input.rr, &input.lock);
     }
     c = input.buf[input.r++ % INPUT_BUF];
     if(c == C('D')){  // EOF
@@ -303,6 +304,7 @@ consoleinit(void)
 {
   initlock(&cons.lock, "console");
   initlock(&input.lock, "input");
+  input.rr = 0;
 
   devsw[CONSOLE].write = consolewrite;
   devsw[CONSOLE].read = consoleread;
