@@ -1,5 +1,6 @@
 /* 
  *
+ * Copyright (c) 2016 Simon Schmidt
  * Copyright (c) 2013 Brian Swetland
  * Copyright (c) 2006-2009 Frans Kaashoek, Robert Morris, Russ Cox,
  *                         Massachusetts Institute of Technology
