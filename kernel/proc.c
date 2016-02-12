@@ -200,6 +200,16 @@ fork(void)
   return pid;
 }
 
+static void
+wait_wakeup(struct proc* p)
+{
+  if(!p) return;
+  if(p->state!=SLEEPING) return;
+  if(p->chan!=p) return;
+  p->state = RUNNABLE;
+}
+
+
 // Exit the current process.  Does not return.
 // An exited process remains in the zombie state
 // until its parent calls wait() to find out it exited.
@@ -207,7 +217,7 @@ void
 exit(void)
 {
   struct proc *p;
-  int fd;
+  int fd,has_zombie;
 
   if(proc == initproc)
     panic("init exiting");
@@ -226,16 +236,19 @@ exit(void)
   acquire(&ptable.lock);
 
   // Parent might be sleeping in wait().
-  wakeup1(proc->parent);
+  wait_wakeup(proc->parent);
 
   // Pass abandoned children to init.
+  has_zombie = 0;
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->parent == proc){
       p->parent = initproc;
       if(p->state == ZOMBIE)
-        wakeup1(initproc);
+        has_zombie = -1;
     }
   }
+  if(has_zombie)
+   wait_wakeup(initproc);
 
   // Jump into the scheduler, never to return.
   proc->state = ZOMBIE;
