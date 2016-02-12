@@ -1,5 +1,6 @@
 /* 
  *
+ * Copyright (c) 2016 Simon Schmidt
  * Copyright (c) 2006-2009 Frans Kaashoek, Robert Morris, Russ Cox,
  *                         Massachusetts Institute of Technology
  * 
@@ -194,6 +195,9 @@ void
 iinit(void)
 {
   initlock(&icache.lock, "icache");
+  int i;
+  for(i=0;i<NINODE;++i)
+   icache.inode[i].queue = 0;
 }
 
 
@@ -305,7 +309,7 @@ ilock(struct inode *ip)
 
   acquire(&icache.lock);
   while(ip->flags & I_BUSY)
-    sleep(ip, &icache.lock);
+    sleep_v2(&ip->queue, &icache.lock);
   ip->flags |= I_BUSY;
   release(&icache.lock);
 
@@ -334,7 +338,7 @@ iunlock(struct inode *ip)
 
   acquire(&icache.lock);
   ip->flags &= ~I_BUSY;
-  wakeup(ip);
+  wakeup_v2(&ip->queue);
   release(&icache.lock);
 }
 
@@ -358,7 +362,7 @@ iput(struct inode *ip)
     iupdate(ip);
     acquire(&icache.lock);
     ip->flags = 0;
-    wakeup(ip);
+    wakeup_v2(&ip->queue);
   }
   ip->ref--;
   release(&icache.lock);
