@@ -72,6 +72,7 @@ struct log {
   int busy; // a transaction is active
   int dev;
   struct logheader lh;
+  struct proc* queue;
 };
 struct log log;
 
@@ -89,6 +90,7 @@ initlog(void)
   log.start = sb.size - sb.nlog;
   log.size = sb.nlog;
   log.dev = ROOTDEV;
+  log.queue = 0;
   recover_from_log();
 }
 
@@ -153,7 +155,7 @@ begin_trans(void)
 {
   acquire(&log.lock);
   while (log.busy) {
-    sleep(&log, &log.lock);
+    sleep_v2(&log.queue, &log.lock);
   }
   log.busy = 1;
   release(&log.lock);
@@ -171,7 +173,7 @@ commit_trans(void)
   
   acquire(&log.lock);
   log.busy = 0;
-  wakeup(&log);
+  wakeup_v2(&log.queue);
   release(&log.lock);
 }
 
