@@ -23,18 +23,18 @@
  *
  */
 
-#include "krnl/vm.h"
-#include "krnl/kalloc.h"
-#include "krnl/string.h"
-#include "krnl/lapic.h"
-#include "krnl/console.h"
+#include <krnl/vm.h>
+#include <krnl/kalloc.h>
+#include <krnl/string.h>
+#include <krnl/lapic.h>
+#include <krnl/console.h>
 
-#include "param.h"
-#include "x86.h"
-#include "memlayout.h"
-#include "mmu.h"
-#include "proc.h"
-#include "elf.h"
+#include <param.h>
+#include <x86.h>
+#include <memlayout.h>
+#include <mmu.h>
+#include <proc.h>
+#include <elf.h>
 
 __thread struct cpu *cpu;
 __thread struct proc *proc;

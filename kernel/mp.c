@@ -2,16 +2,16 @@
 // Search memory for MP description structures.
 // http://developer.intel.com/design/pentium/datashts/24201606.pdf
 
-#include "krnl/mp.h"
-#include "krnl/string.h"
-#include "krnl/lapic.h"
-#include "krnl/console.h"
-#include "param.h"
-#include "memlayout.h"
-#include "mp.h"
-#include "x86.h"
-#include "mmu.h"
-#include "proc.h"
+#include <krnl/mp.h>
+#include <krnl/string.h>
+#include <krnl/lapic.h>
+#include <krnl/console.h>
+#include <param.h>
+#include <memlayout.h>
+#include <mp.h>
+#include <x86.h>
+#include <mmu.h>
+#include <proc.h>
 
 struct cpu cpus[NCPU];
 static struct cpu *bcpu;

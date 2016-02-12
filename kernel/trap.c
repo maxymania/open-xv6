@@ -1,24 +1,24 @@
-#include "krnl/trap.h"
+#include <krnl/trap.h>
 
 
 /*
  * TODO: simplify interfacing with Device drivers somehow.
  */
-#include "krnl/proc.h"
-#include "krnl/syscall.h"
-#include "krnl/lapic.h"
-#include "krnl/ide.h"
-#include "krnl/kbd.h"
-#include "krnl/uart.h"
-#include "krnl/console.h"
-#include "krnl/spinlock.h"
+#include <krnl/proc.h>
+#include <krnl/syscall.h>
+#include <krnl/lapic.h>
+#include <krnl/ide.h>
+#include <krnl/kbd.h>
+#include <krnl/uart.h>
+#include <krnl/console.h>
+#include <krnl/spinlock.h>
 
-#include "param.h"
-#include "memlayout.h"
-#include "mmu.h"
-#include "proc.h"
-#include "x86.h"
-#include "traps.h"
+#include <param.h>
+#include <memlayout.h>
+#include <mmu.h>
+#include <proc.h>
+#include <x86.h>
+#include <traps.h>
 
 // Interrupt descriptor table (shared by all CPUs).
 struct gatedesc idt[256];

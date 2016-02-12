@@ -1,13 +1,12 @@
-//#include "krnl/kdefs.h"
-#include "krnl/syscall.h"
-#include "krnl/console.h"
-#include "krnl/header_only.h"
-#include "param.h"
-#include "memlayout.h"
-#include "mmu.h"
-#include "proc.h"
-#include "x86.h"
-#include "syscall.h"
+#include <krnl/syscall.h>
+#include <krnl/console.h>
+#include <krnl/header_only.h>
+#include <param.h>
+#include <memlayout.h>
+#include <mmu.h>
+#include <proc.h>
+#include <x86.h>
+#include <syscall.h>
 
 // User code makes a system call with INT T_SYSCALL.
 // System call number in %eax.

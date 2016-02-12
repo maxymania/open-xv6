@@ -1,5 +1,5 @@
-#include "gnrc/types.h"
-#include "x86.h"
+#include <gnrc/types.h>
+#include <x86.h>
 
 void*
 memset(void *dst, int c, uint n)

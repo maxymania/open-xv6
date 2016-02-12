@@ -1,14 +1,14 @@
-#include "krnl/pipe.h"
-#include "krnl/console.h"
-#include "krnl/kalloc.h"
-#include "krnl/spinlock.h"
-#include "krnl/file.h"
-#include "krnl/inode.h"
-#include "krnl/proc.h"
-#include "param.h"
-#include "mmu.h"
-#include "proc.h"
-#include "fs.h"
+#include <krnl/pipe.h>
+#include <krnl/console.h>
+#include <krnl/kalloc.h>
+#include <krnl/spinlock.h>
+#include <krnl/file.h>
+#include <krnl/inode.h>
+#include <krnl/proc.h>
+#include <param.h>
+#include <mmu.h>
+#include <proc.h>
+#include <fs.h>
 
 #define PIPESIZE 512
 

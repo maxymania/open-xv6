@@ -2,10 +2,10 @@
 // Only used on uniprocessors;
 // SMP machines use the local APIC timer.
 
-#include "krnl/timer.h"
-#include "krnl/picirq.h"
-#include "traps.h"
-#include "x86.h"
+#include <krnl/timer.h>
+#include <krnl/picirq.h>
+#include <traps.h>
+#include <x86.h>
 
 #define IO_TIMER1       0x040           // 8253 Timer #1
 

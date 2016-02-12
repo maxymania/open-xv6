@@ -1,11 +1,11 @@
-#include "krnl/log.h"
-#include "krnl/console.h"
-#include "krnl/spinlock.h"
-#include "krnl/fs.h"
-#include "krnl/proc.h"
-#include "krnl/string.h"
-#include "param.h"
-#include "fs.h"
+#include <krnl/log.h>
+#include <krnl/console.h>
+#include <krnl/spinlock.h>
+#include <krnl/fs.h>
+#include <krnl/proc.h>
+#include <krnl/string.h>
+#include <param.h>
+#include <fs.h>
 
 // Simple logging. Each system call that might write the file system
 // should be surrounded with begin_trans() and commit_trans() calls.

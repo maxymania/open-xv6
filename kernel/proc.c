@@ -2,18 +2,18 @@
 /*
  * As we pull almost everything in here, we pull in the entire kernel API
  */
-#include "krnl/kdefs.h"
+#include <krnl/kdefs.h>
 
 /* listup all includes, possibly get rid of krnl/kdefs.h */
 #if 0
-#include "krnl/spinlock.h"
+#include <krnl/spinlock.h>
 #endif
 
-#include "param.h"
-#include "memlayout.h"
-#include "mmu.h"
-#include "x86.h"
-#include "proc.h"
+#include <param.h>
+#include <memlayout.h>
+#include <mmu.h>
+#include <x86.h>
+#include <proc.h>
 
 
 struct {

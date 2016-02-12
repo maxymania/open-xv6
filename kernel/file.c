@@ -2,15 +2,15 @@
 // File descriptors
 //
 
-#include "krnl/file.h"
-#include "krnl/spinlock.h"
-#include "krnl/pipe.h"
-#include "krnl/console.h"
-#include "krnl/log.h"
-#include "krnl/fs.h"
-#include "krnl/inode.h"
-#include "param.h"
-#include "fs.h"
+#include <krnl/file.h>
+#include <krnl/spinlock.h>
+#include <krnl/pipe.h>
+#include <krnl/console.h>
+#include <krnl/log.h>
+#include <krnl/fs.h>
+#include <krnl/inode.h>
+#include <param.h>
+#include <fs.h>
 
 struct devsw devsw[NDEV];
 struct {

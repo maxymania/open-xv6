@@ -4,22 +4,22 @@
 
 #include <stdarg.h>
 
-#include "krnl/console.h"
-#include "krnl/spinlock.h"
-#include "krnl/string.h"
-#include "krnl/uart.h"
-#include "krnl/proc.h"
-#include "krnl/fs.h"
-#include "krnl/ioapic.h"
-#include "krnl/picirq.h"
-#include "krnl/inode.h"
-#include "param.h"
-#include "traps.h"
-#include "fs.h"
-#include "memlayout.h"
-#include "mmu.h"
-#include "proc.h"
-#include "x86.h"
+#include <krnl/console.h>
+#include <krnl/spinlock.h>
+#include <krnl/string.h>
+#include <krnl/uart.h>
+#include <krnl/proc.h>
+#include <krnl/fs.h>
+#include <krnl/ioapic.h>
+#include <krnl/picirq.h>
+#include <krnl/inode.h>
+#include <param.h>
+#include <traps.h>
+#include <fs.h>
+#include <memlayout.h>
+#include <mmu.h>
+#include <proc.h>
+#include <x86.h>
 
 static void consputc(int);
 

@@ -2,12 +2,12 @@
 // http://www.intel.com/design/chipsets/datashts/29056601.pdf
 // See also picirq.c.
 
-#include "gnrc/types.h"
-#include "krnl/ioapic.h"
-#include "krnl/mp.h"
-#include "krnl/console.h"
-#include "traps.h"
-#include "memlayout.h"
+#include <gnrc/types.h>
+#include <krnl/ioapic.h>
+#include <krnl/mp.h>
+#include <krnl/console.h>
+#include <traps.h>
+#include <memlayout.h>
 
 #define IOAPIC  0xFEC00000   // Default physical address of IO APIC
 

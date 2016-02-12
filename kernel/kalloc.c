@@ -2,13 +2,13 @@
 // memory for user processes, kernel stacks, page table pages,
 // and pipe buffers. Allocates 4096-byte pages.
 
-#include "krnl/kalloc.h"
-#include "krnl/spinlock.h"
-#include "krnl/console.h"
-#include "krnl/string.h"
-#include "param.h"
-#include "memlayout.h"
-#include "mmu.h"
+#include <krnl/kalloc.h>
+#include <krnl/spinlock.h>
+#include <krnl/console.h>
+#include <krnl/string.h>
+#include <param.h>
+#include <memlayout.h>
+#include <mmu.h>
 
 void freerange(void *vstart, void *vend);
 extern char end[]; // first address after kernel loaded from ELF file

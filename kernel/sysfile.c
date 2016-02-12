@@ -4,22 +4,22 @@
 // user code, and calls into file.c and fs.c.
 //
 
-#include "krnl/syscall.h"
-#include "krnl/exec.h"
-#include "krnl/file.h"
-#include "krnl/pipe.h"
-#include "krnl/fs.h"
-#include "krnl/log.h"
-#include "krnl/console.h"
-#include "krnl/string.h"
-#include "krnl/header_only.h"
-#include "krnl/inode.h"
-#include "param.h"
-#include "stat.h"
-#include "mmu.h"
-#include "proc.h"
-#include "fs.h"
-#include "fcntl.h"
+#include <krnl/syscall.h>
+#include <krnl/exec.h>
+#include <krnl/file.h>
+#include <krnl/pipe.h>
+#include <krnl/fs.h>
+#include <krnl/log.h>
+#include <krnl/console.h>
+#include <krnl/string.h>
+#include <krnl/header_only.h>
+#include <krnl/inode.h>
+#include <param.h>
+#include <stat.h>
+#include <mmu.h>
+#include <proc.h>
+#include <fs.h>
+#include <fcntl.h>
 
 // Fetch the nth word-sized system call argument as a file descriptor
 // and return both the descriptor and the corresponding struct file.

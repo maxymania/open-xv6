@@ -20,12 +20,12 @@
 // * B_DIRTY: the buffer data has been modified
 //     and needs to be written to disk.
 
-#include "krnl/bio.h"
-#include "krnl/ide.h"
-#include "krnl/console.h"
-#include "krnl/spinlock.h"
-#include "krnl/proc.h"
-#include "param.h"
+#include <krnl/bio.h>
+#include <krnl/ide.h>
+#include <krnl/console.h>
+#include <krnl/spinlock.h>
+#include <krnl/proc.h>
+#include <param.h>
 
 struct {
   struct spinlock lock;

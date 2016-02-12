@@ -1,7 +1,7 @@
-#include "krnl/kbd.h"
-#include "krnl/console.h"
-#include "x86.h"
-#include "kbd.h"
+#include <krnl/kbd.h>
+#include <krnl/console.h>
+#include <x86.h>
+#include <kbd.h>
 
 int
 kbdgetc(void)

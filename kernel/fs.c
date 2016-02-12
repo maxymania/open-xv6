@@ -9,20 +9,20 @@
 // routines.  The (higher-level) system call implementations
 // are in sysfile.c.
 
-#include "gnrc/types.h"
-#include "krnl/fs.h"
-#include "krnl/bio.h"
-#include "krnl/string.h"
-#include "krnl/log.h"
-#include "krnl/console.h"
-#include "krnl/spinlock.h"
-#include "krnl/proc.h"
-#include "krnl/inode.h"
-#include "param.h"
-#include "stat.h"
-#include "mmu.h"
-#include "proc.h"
-#include "fs.h"
+#include <gnrc/types.h>
+#include <krnl/fs.h>
+#include <krnl/bio.h>
+#include <krnl/string.h>
+#include <krnl/log.h>
+#include <krnl/console.h>
+#include <krnl/spinlock.h>
+#include <krnl/proc.h>
+#include <krnl/inode.h>
+#include <param.h>
+#include <stat.h>
+#include <mmu.h>
+#include <proc.h>
+#include <fs.h>
 
 #define min(a, b) ((a) < (b) ? (a) : (b))
 static void itrunc(struct inode*);
