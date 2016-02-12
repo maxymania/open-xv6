@@ -53,8 +53,8 @@ static pde_t *kpgdir1;
 
 void wrmsr(uint msr, uint64 val);
 
-void tvinit(void) {}
-void idtinit(void) {}
+//void tvinit(void) {}
+//void idtinit(void) {}
 
 static void mkgate(uint *idt, uint n, void *kva, uint pl, uint trap) {
   uint64 addr = (uint64) kva;

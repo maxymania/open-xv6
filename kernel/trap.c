@@ -51,6 +51,7 @@ struct gatedesc idt[256];
 extern uintp vectors[];  // in vectors.S: array of 256 entry pointers
 struct spinlock tickslock;
 uint ticks;
+struct proc* ticksqueue;
 
 #ifndef X64
 void
@@ -63,6 +64,7 @@ tvinit(void)
   SETGATE(idt[T_SYSCALL], 1, SEG_KCODE<<3, vectors[T_SYSCALL], DPL_USER);
   
   initlock(&tickslock, "time");
+  ticksqueue = 0;
 }
 
 void
@@ -70,6 +72,12 @@ idtinit(void)
 {
   lidt(idt, sizeof(idt));
 }
+#else
+void tvinit(void) {
+  initlock(&tickslock, "time");
+  ticksqueue = 0;
+}
+void idtinit(void) {}
 #endif
 
 //PAGEBREAK: 41
@@ -91,7 +99,7 @@ trap(struct trapframe *tf)
     if(cpu->id == 0){
       acquire(&tickslock);
       ticks++;
-      wakeup(&ticks);
+      wakeup_v2(&ticksqueue);
       release(&tickslock);
     }
     lapiceoi();

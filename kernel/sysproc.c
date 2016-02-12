@@ -97,7 +97,7 @@ sys_sleep(void)
       release(&tickslock);
       return -1;
     }
-    sleep(&ticks, &tickslock);
+    sleep_v2(&ticksqueue, &tickslock);
   }
   release(&tickslock);
   return 0;
