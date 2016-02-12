@@ -485,9 +485,13 @@ wakeup1_v2(struct proc** wp)
   struct proc *p;
   struct proc *op;
 
-  for(p = *wp; p; p = p->nextsleep){
+  p = *wp;
+  while(p){
     if(p->state == SLEEPING2)
       p->state = RUNNABLE;
+    op = p;
+    p = p->nextsleep;
+    op->nextsleep = 0;
   }
   *wp = 0;
 }
