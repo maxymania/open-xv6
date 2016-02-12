@@ -95,9 +95,9 @@ userinit(void)
   
   p = allocproc();
   initproc = p;
-  if((p->pgdir = setupkvm()) == 0)
+  if((p->pagetable = setupkvm_v2()) == 0)
     panic("userinit: out of memory?");
-  inituvm(p->pgdir, _binary_out_initcode_start, (uintp)_binary_out_initcode_size);
+  inituvm_v2(p->pagetable, _binary_out_initcode_start, (uintp)_binary_out_initcode_size);
   p->sz = PGSIZE;
   memset(p->tf, 0, sizeof(*p->tf));
   p->tf->cs = (SEG_UCODE << 3) | DPL_USER;
@@ -125,10 +125,10 @@ growproc(int n)
   
   sz = proc->sz;
   if(n > 0){
-    if((sz = allocuvm(proc->pgdir, sz, sz + n)) == 0)
+    if((sz = allocuvm_v2(proc->pagetable, sz, sz + n)) == 0)
       return -1;
   } else if(n < 0){
-    if((sz = deallocuvm(proc->pgdir, sz, sz + n)) == 0)
+    if((sz = deallocuvm_v2(proc->pagetable, sz, sz + n)) == 0)
       return -1;
   }
   proc->sz = sz;
@@ -150,7 +150,7 @@ fork(void)
     return -1;
 
   // Copy process state from p.
-  if((np->pgdir = copyuvm(proc->pgdir, proc->sz)) == 0){
+  if((np->pagetable = copyuvm_v2(proc->pagetable, proc->sz)) == 0){
     kfree(np->kstack);
     np->kstack = 0;
     np->state = UNUSED;
@@ -238,7 +238,7 @@ wait(void)
         pid = p->pid;
         kfree(p->kstack);
         p->kstack = 0;
-        freevm(p->pgdir);
+        freevm_v2(p->pagetable);
         p->state = UNUSED;
         p->pid = 0;
         p->parent = 0;

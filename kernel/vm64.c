@@ -205,11 +205,12 @@ switchuvm(struct proc *p)
   void *pml4;
   uint *tss;
   pushcli();
-  if(p->pgdir == 0)
-    panic("switchuvm: no pgdir");
+  pagetab_t* tab = p->pagetable;
+  if(tab == 0)
+    panic("switchuvm: no Page Table");
   tss = (uint*) (((char*) cpu->local) + 1024);
   tss_set_rsp(tss, 0, (uintp)proc->kstack + KSTACKSIZE);
-  pml4 = (void*) PTE_ADDR(p->pgdir[511]);
+  pml4 = (void*) PTE_ADDR(p->pagetable->pgdir[511]);
   lcr3(v2p(pml4));
   popcli();
 }

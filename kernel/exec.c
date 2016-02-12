@@ -1,4 +1,5 @@
 #include <krnl/exec.h>
+#include <gnrc/aptable.h>
 #include <param.h>
 #include <memlayout.h>
 #include <mmu.h>
@@ -16,12 +17,12 @@ exec(char *path, char **argv)
   struct elfhdr elf;
   struct inode *ip;
   struct proghdr ph;
-  pde_t *pgdir, *oldpgdir;
+  pagetab_t *tab, *oldtab;
 
   if((ip = namei(path)) == 0)
     return -1;
   ilock(ip);
-  pgdir = 0;
+  tab = 0;
 
   // Check ELF header
   if(readi(ip, (char*)&elf, 0, sizeof(elf)) < sizeof(elf))
@@ -29,7 +30,7 @@ exec(char *path, char **argv)
   if(elf.magic != ELF_MAGIC)
     goto bad;
 
-  if((pgdir = setupkvm()) == 0)
+  if((tab = setupkvm_v2()) == 0)
     goto bad;
 
   // Load program into memory.
@@ -41,9 +42,9 @@ exec(char *path, char **argv)
       continue;
     if(ph.memsz < ph.filesz)
       goto bad;
-    if((sz = allocuvm(pgdir, sz, ph.vaddr + ph.memsz)) == 0)
+    if((sz = allocuvm_v2(tab, sz, ph.vaddr + ph.memsz)) == 0)
       goto bad;
-    if(loaduvm(pgdir, (char*)ph.vaddr, ip, ph.off, ph.filesz) < 0)
+    if(loaduvm_v2(tab, (char*)ph.vaddr, ip, ph.off, ph.filesz) < 0)
       goto bad;
   }
   iunlockput(ip);
@@ -52,9 +53,9 @@ exec(char *path, char **argv)
   // Allocate two pages at the next page boundary.
   // Make the first inaccessible.  Use the second as the user stack.
   sz = PGROUNDUP(sz);
-  if((sz = allocuvm(pgdir, sz, sz + 2*PGSIZE)) == 0)
+  if((sz = allocuvm_v2(tab, sz, sz + 2*PGSIZE)) == 0)
     goto bad;
-  clearpteu(pgdir, (char*)(sz - 2*PGSIZE));
+  clearpteu_v2(tab, (char*)(sz - 2*PGSIZE));
   sp = sz;
 
   // Push argument strings, prepare rest of stack in ustack.
@@ -62,7 +63,7 @@ exec(char *path, char **argv)
     if(argc >= MAXARG)
       goto bad;
     sp = (sp - (strlen(argv[argc]) + 1)) & ~(sizeof(uintp)-1);
-    if(copyout(pgdir, sp, argv[argc], strlen(argv[argc]) + 1) < 0)
+    if(copyout_v2(tab, sp, argv[argc], strlen(argv[argc]) + 1) < 0)
       goto bad;
     ustack[3+argc] = sp;
   }
@@ -78,7 +79,7 @@ exec(char *path, char **argv)
 #endif
 
   sp -= (3+argc+1) * sizeof(uintp);
-  if(copyout(pgdir, sp, ustack, (3+argc+1)*sizeof(uintp)) < 0)
+  if(copyout_v2(tab, sp, ustack, (3+argc+1)*sizeof(uintp)) < 0)
     goto bad;
 
   // Save program name for debugging.
@@ -88,19 +89,22 @@ exec(char *path, char **argv)
   safestrcpy(proc->name, last, sizeof(proc->name));
 
   // Commit to the user image.
-  oldpgdir = proc->pgdir;
-  proc->pgdir = pgdir;
+  oldtab = proc->pagetable;
+  proc->pagetable = tab;
+
   proc->sz = sz;
   proc->tf->eip = elf.entry;  // main
   proc->tf->esp = sp;
   switchuvm(proc);
-  freevm(oldpgdir);
+  freevm_v2(oldtab);
   return 0;
 
  bad:
-  if(pgdir)
-    freevm(pgdir);
+  if(tab)
+    freevm_v2(tab);
   if(ip)
     iunlockput(ip);
   return -1;
 }
+
+
