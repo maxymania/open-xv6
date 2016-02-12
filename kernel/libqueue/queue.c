@@ -4,18 +4,16 @@
 #include "krnl/kalloc.h"
 
 int lq_new(struct lq_queue* queue){
-	struct spinlock* lock = (struct spinlock*)kalloc();
-	if(lock==0) return -1;
-	initlock(lock,"libqueue");
-	*queue = (struct lq_queue){lock,0,0,0};
+	queue->head  = 0;
+	queue->tail  = 0;
+	queue->count = 0;
+	initlock(&(queue->lock),"libqueue");
 	return 0;
 }
-void lq_destroy(struct lq_queue* queue){
-	kfree((char*)(queue->lock));
-}
+void lq_destroy(struct lq_queue* queue){}
 
 void lq_put(struct lq_queue* queue, struct lq_elem* elem){
-	acquire(queue->lock);
+	acquire(&(queue->lock));
 	if(queue->head==0){
 		queue->tail = queue->head = elem;
 	}else{
@@ -23,11 +21,11 @@ void lq_put(struct lq_queue* queue, struct lq_elem* elem){
 		queue->tail = elem;
 	}
 	queue->count++;
-	release((queue->lock));
+	release(&(queue->lock));
 }
 struct lq_elem* lq_get(struct lq_queue* queue){
 	struct lq_elem* elem;
-	acquire(queue->lock);
+	acquire(&(queue->lock));
 	if(queue->head){
 		elem = queue->head;
 		if(queue->head==queue->tail)
@@ -36,7 +34,7 @@ struct lq_elem* lq_get(struct lq_queue* queue){
 			queue->head = elem->next;
 		queue->count--;
 	}
-	release(queue->lock);
+	release(&(queue->lock));
 	return elem;
 }
 

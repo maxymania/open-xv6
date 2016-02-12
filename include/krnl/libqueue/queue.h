@@ -9,7 +9,7 @@ struct lq_elem {
 };
 
 struct lq_queue {
-	struct spinlock *lock;
+	struct spinlock lock;
 	struct lq_elem* head;
 	struct lq_elem* tail;
 	long long int count;

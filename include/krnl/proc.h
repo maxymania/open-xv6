@@ -22,5 +22,8 @@ int             wait(void);
 void            wakeup(void*);
 void            yield(void);
 
+void            sleep_v2(struct proc**, struct spinlock*);
+void            wakeup_v2(struct proc**);
+
 #endif
 

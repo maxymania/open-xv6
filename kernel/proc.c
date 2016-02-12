@@ -419,6 +419,42 @@ sleep(void *chan, struct spinlock *lk)
   }
 }
 
+void
+sleep_v2(struct proc** wp, struct spinlock* lk){
+  if(proc == 0)
+    panic("sleep");
+
+  if(lk == 0)
+    panic("sleep without lk");
+
+  // Must acquire ptable.lock in order to
+  // change p->state and then call sched.
+  // Once we hold ptable.lock, we can be
+  // guaranteed that we won't miss any wakeup
+  // (wakeup runs with ptable.lock locked),
+  // so it's okay to release lk.
+  if(lk != &ptable.lock){  //DOC: sleeplock0
+    acquire(&ptable.lock);  //DOC: sleeplock1
+    release(lk);
+  }
+
+  // Go to sleep.
+  proc->chan = 0;
+  proc->state = SLEEPING2;
+  proc->nextsleep = *wp;
+  *wp = proc;
+  sched();
+
+  // Tidy up.
+  proc->chan = 0;
+
+  // Reacquire original lock.
+  if(lk != &ptable.lock){  //DOC: sleeplock2
+    release(&ptable.lock);
+    acquire(lk);
+  }
+}
+
 //PAGEBREAK!
 // Wake up all processes sleeping on chan.
 // The ptable lock must be held.
@@ -440,6 +476,32 @@ wakeup(void *chan)
   wakeup1(chan);
   release(&ptable.lock);
 }
+
+// Wake up all processes sleeping on wait-pointer.
+// The ptable lock must be held.
+static void
+wakeup1_v2(struct proc** wp)
+{
+  struct proc *p;
+  struct proc *op;
+
+  for(p = *wp; p; p = p->nextsleep){
+    if(p->state == SLEEPING2)
+      p->state = RUNNABLE;
+  }
+  *wp = 0;
+}
+
+// Wake up all processes sleeping on wait-pointer.
+void
+wakeup_v2(struct proc** wp)
+{
+  acquire(&ptable.lock);
+  wakeup1_v2(wp);
+  release(&ptable.lock);
+}
+
+
 
 // Kill the process with the given pid.
 // Process won't exit until it returns
@@ -475,6 +537,7 @@ procdump(void)
   [UNUSED]    "unused",
   [EMBRYO]    "embryo",
   [SLEEPING]  "sleep ",
+  [SLEEPING2] "sleep2",
   [RUNNABLE]  "runble",
   [RUNNING]   "run   ",
   [ZOMBIE]    "zombie"
