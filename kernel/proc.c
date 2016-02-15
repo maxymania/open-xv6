@@ -58,6 +58,9 @@ extern void trapret(void);
 
 static void wakeup1(void *chan);
 
+static void sched(void);
+static void sleep(void*, struct spinlock*);
+
 void
 pinit(void)
 {
@@ -347,7 +350,7 @@ scheduler(void)
 
 // Enter scheduler.  Must hold only ptable.lock
 // and have changed proc->state.
-void
+static void
 sched(void)
 {
   int intena;
@@ -397,7 +400,7 @@ forkret(void)
 
 // Atomically release lock and sleep on chan.
 // Reacquires lock when awakened.
-void
+static void
 sleep(void *chan, struct spinlock *lk)
 {
   if(proc == 0)
@@ -481,6 +484,12 @@ wakeup1(void *chan)
       p->state = RUNNABLE;
 }
 
+
+#if 0
+// Cutting this out later.
+
+void            wakeup(void*);
+
 // Wake up all processes sleeping on chan.
 void
 wakeup(void *chan)
@@ -489,6 +498,8 @@ wakeup(void *chan)
   wakeup1(chan);
   release(&ptable.lock);
 }
+#endif
+
 
 // Wake up all processes sleeping on wait-pointer.
 // The ptable lock must be held.
