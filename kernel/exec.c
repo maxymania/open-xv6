@@ -122,7 +122,7 @@ exec(char *path, char **argv)
   proc->sz = sz;
   proc->tf->eip = elf.entry;  // main
   proc->tf->esp = sp;
-  switchuvm(proc);
+  flushtlb_all();
   freevm_v2(oldtab);
   return 0;
 

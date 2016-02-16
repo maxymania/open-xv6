@@ -57,6 +57,10 @@ stosl(void *addr, int data, int cnt)
                "memory", "cc");
 }
 
+static inline void invlpg(void *addr) {
+	asm volatile ("invlpg (%0)"::"r"(addr));
+}
+
 struct segdesc;
 
 static inline void

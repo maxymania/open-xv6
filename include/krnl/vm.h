@@ -14,6 +14,9 @@ void            switchuvm(struct proc*);
 void            switchkvm(void);
 int             copyout(pde_t*, uint, void*, uint);
 
+void            flushtlb_all(void);
+void            flushtlb_range(uintp, uintp);
+void            flushtlb_page(uintp);
 
 pagetab_t*      setupkvm_v2(void);
 void            inituvm_v2(pagetab_t*, char*, uint);

@@ -397,3 +397,23 @@ copyout_v2(pagetab_t* tab, uint va, void* p, uint len)
   }
   return 0;
 }
+
+void
+flushtlb_all(void){
+	// This damn hack is scattered all over the kernel to flush the TLB.
+	switchuvm(proc);
+}
+
+void
+flushtlb_range(uintp beg, uintp end){
+	beg &= ~0xfff;
+	end &= ~0xfff;
+	for(;beg<end;beg+=0x1000)
+		invlpg(beg);
+}
+
+void
+flushtlb_page(uintp pos){
+	invlpg(pos);
+}
+

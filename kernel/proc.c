@@ -156,12 +156,14 @@ growproc(int n)
   if(n > 0){
     if((sz = allocuvm_v2(proc->pagetable, sz, sz + n)) == 0)
       return -1;
+    flushtlb_range(sz, sz + n);
   } else if(n < 0){
     if((sz = deallocuvm_v2(proc->pagetable, sz, sz + n)) == 0)
       return -1;
+    flushtlb_range(sz + n, sz);
   }
   proc->sz = sz;
-  switchuvm(proc);
+  //flushtlb_all();
   return 0;
 }
 
