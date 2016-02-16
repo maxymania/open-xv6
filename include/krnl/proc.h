@@ -22,5 +22,19 @@ void            yield(void);
 void            sleep_v2(struct proc**, struct spinlock*);
 void            wakeup_v2(struct proc**);
 
+/* 
+ * Subsystems can manage special per-process flags for their own purpose.
+ * 
+ * For example: "Is the process in an begin_trans()-commit_trans()?" or
+ * something similar.
+ */
+
+/* while being in an begin_trans()-commit_trans() block */
+#define SSF_DISKLOG 1
+
+void            psetflag(uint pset);
+void            pclearflag(uint pset);
+uint            pgetflag(uint pset);
+
 #endif
 

@@ -592,4 +592,21 @@ procdump(void)
   }
 }
 
+void
+psetflag(uint pset){
+  proc->subsysflags |= pset;
+}
+
+void
+pclearflag(uint pset){
+  proc->subsysflags &= ~pset;
+}
+
+uint
+pgetflag(uint pset){
+  return proc->subsysflags & pset;
+}
+
+
+
 

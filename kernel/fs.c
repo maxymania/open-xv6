@@ -360,7 +360,14 @@ iput(struct inode *ip)
     release(&icache.lock);
     itrunc(ip);
     ip->type = 0;
-    iupdate(ip);
+    if(pgetflag(SSF_DISKLOG)){
+        iupdate(ip);
+    }else{
+        begin_trans();
+        iupdate(ip);
+        commit_trans();
+    }
+    
     acquire(&icache.lock);
     ip->flags = 0;
     wakeup_v2(&ip->queue);

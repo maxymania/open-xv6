@@ -155,6 +155,7 @@ recover_from_log(void)
 void
 begin_trans(void)
 {
+  psetflag(SSF_DISKLOG);
   acquire(&log.lock);
   while (log.busy) {
     sleep_v2(&log.queue, &log.lock);
@@ -177,6 +178,7 @@ commit_trans(void)
   log.busy = 0;
   wakeup_v2(&log.queue);
   release(&log.lock);
+  pclearflag(SSF_DISKLOG);
 }
 
 // Caller has modified b->data and is done with the buffer.
