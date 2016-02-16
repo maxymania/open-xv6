@@ -136,7 +136,7 @@ seginit(void)
 // because we need to find the other levels later, we'll stash
 // backpointers to them in the top two entries of the level two
 // table.
-pde_t*
+static pde_t*
 setupkvm(void)
 {
   pde_t *pml4 = (pde_t*) kalloc();
