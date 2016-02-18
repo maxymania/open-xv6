@@ -24,7 +24,7 @@ void lq_put(struct lq_queue* queue, struct lq_elem* elem){
 	release(&(queue->lock));
 }
 struct lq_elem* lq_get(struct lq_queue* queue){
-	struct lq_elem* elem;
+	struct lq_elem* elem = 0;
 	acquire(&(queue->lock));
 	if(queue->head){
 		elem = queue->head;
