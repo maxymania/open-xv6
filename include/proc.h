@@ -108,6 +108,7 @@ struct proc {
   uintp sz;                     // Size of process memory (bytes)
   pagetab_t* pagetable;        // Page table (modern)
   struct proc* nextsleep;      // Next sleeping process aside this. (sleep2)
+  struct lq_elem q_anchor;     // List-Element representing this proc.
   char *kstack;                // Bottom of kernel stack for this process
   enum procstate state;        // Process state
   volatile int pid;            // Process ID

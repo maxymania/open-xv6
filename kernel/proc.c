@@ -30,6 +30,8 @@
  */
 #include <krnl/kdefs.h>
 
+#include <krnl/libqueue/queue.h>
+
 /* listup all includes, possibly get rid of krnl/kdefs.h */
 #if 0
 #include <krnl/spinlock.h>
@@ -51,6 +53,7 @@ struct {
 } ptable;
 
 static struct proc *initproc;
+static struct lq_queue pt_unused;
 
 int nextpid = 1;
 extern void forkret(void);
@@ -58,30 +61,49 @@ extern void trapret(void);
 
 static void wakeup1(void *chan);
 
+static void fake_sched(struct proc* p);
 static void sched(void);
 static void sleep(void*, struct spinlock*);
 
 void
 pinit(void)
 {
+  lq_new(&pt_unused);
   initlock(&ptable.lock, "ptable");
+  register int i;
+  for(i=0;i<NPROC;++i){
+    ptable.proc[i].q_anchor.data = &(ptable.proc[i]);
+    lq_put(&pt_unused,&(ptable.proc[i].q_anchor));
+  }
+}
+
+// Called within sched().
+// Puts process back into a queue, depending on its state.
+static void
+fake_sched(struct proc* p){
+
+ // If state = UNUSED, put process back onto pt_unused.
+ if(p->state == UNUSED)
+  lq_put(&pt_unused,&(p->q_anchor));
 }
 
 //PAGEBREAK: 32
-// Look in the process table for an UNUSED proc.
+// Look in the pt_unused queue for an UNUSED proc.
 // If found, change state to EMBRYO and initialize
 // state required to run in the kernel.
 // Otherwise return 0.
 static struct proc*
 allocproc(void)
 {
+  struct lq_elem* e;
   struct proc *p;
   char *sp;
 
   acquire(&ptable.lock);
-  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-    if(p->state == UNUSED)
-      goto found;
+  if(e = lq_get(&pt_unused)){
+    p = e->data;
+    goto found;
+  }
   release(&ptable.lock);
   return 0;
 
@@ -93,6 +115,7 @@ found:
   // Allocate kernel stack.
   if((p->kstack = kalloc()) == 0){
     p->state = UNUSED;
+    fake_sched(p);
     return 0;
   }
   sp = p->kstack + KSTACKSIZE;
@@ -143,6 +166,7 @@ userinit(void)
   p->cwd = namei("/");
 
   p->state = RUNNABLE;
+  fake_sched(p);
 }
 
 // Grow current process's memory by n bytes.
@@ -185,6 +209,7 @@ fork(void)
     kfree(np->kstack);
     np->kstack = 0;
     np->state = UNUSED;
+    fake_sched(np);
     return -1;
   }
   np->sz = proc->sz;
@@ -201,6 +226,7 @@ fork(void)
  
   pid = np->pid;
   np->state = RUNNABLE;
+  fake_sched(np);
   safestrcpy(np->name, proc->name, sizeof(proc->name));
   return pid;
 }
@@ -212,6 +238,7 @@ wait_wakeup(struct proc* p)
   if(p->state!=SLEEPING) return;
   if(p->chan!=p) return;
   p->state = RUNNABLE;
+  fake_sched(p);
 }
 
 
@@ -288,6 +315,7 @@ wait(void)
         p->parent = 0;
         p->name[0] = 0;
         p->killed = 0;
+        fake_sched(p);
         release(&ptable.lock);
         return pid;
       }
@@ -365,6 +393,7 @@ sched(void)
     panic("sched running");
   if(readeflags()&FL_IF)
     panic("sched interruptible");
+  fake_sched(proc);
   intena = cpu->intena;
   swtch(&proc->context, cpu->scheduler);
   cpu->intena = intena;
@@ -482,8 +511,10 @@ wakeup1(void *chan)
   struct proc *p;
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-    if(p->state == SLEEPING && p->chan == chan)
+    if(p->state == SLEEPING && p->chan == chan){
       p->state = RUNNABLE;
+      fake_sched(p);
+    }
 }
 
 
@@ -513,8 +544,10 @@ wakeup1_v2(struct proc** wp)
 
   p = *wp;
   while(p){
-    if(p->state == SLEEPING2)
+    if(p->state == SLEEPING2){
       p->state = RUNNABLE;
+      fake_sched(p);
+    }
     op = p;
     p = p->nextsleep;
     op->nextsleep = 0;
@@ -546,8 +579,10 @@ kill(int pid)
     if(p->pid == pid){
       p->killed = 1;
       // Wake process from sleep if necessary.
-      if(p->state == SLEEPING)
+      if(p->state == SLEEPING){
         p->state = RUNNABLE;
+        fake_sched(p);
+      }
       release(&ptable.lock);
       return 0;
     }
