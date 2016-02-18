@@ -54,6 +54,7 @@ struct {
 
 static struct proc *initproc;
 static struct lq_queue pt_unused;
+static struct lq_queue pt_runnable;
 
 int nextpid = 1;
 extern void forkret(void);
@@ -69,6 +70,7 @@ void
 pinit(void)
 {
   lq_new(&pt_unused);
+  lq_new(&pt_runnable);  
   initlock(&ptable.lock, "ptable");
   register int i;
   for(i=0;i<NPROC;++i){
@@ -85,6 +87,10 @@ fake_sched(struct proc* p){
  // If state = UNUSED, put process back onto pt_unused.
  if(p->state == UNUSED)
   lq_put(&pt_unused,&(p->q_anchor));
+
+ // If state = RUNNABLE, put process back onto pt_unused.
+ if(p->state == RUNNABLE)
+  lq_put(&pt_runnable,&(p->q_anchor));
 }
 
 //PAGEBREAK: 32
@@ -100,7 +106,7 @@ allocproc(void)
   char *sp;
 
   acquire(&ptable.lock);
-  if(e = lq_get(&pt_unused)){
+  if((e = lq_get(&pt_unused))){
     p = e->data;
     goto found;
   }
@@ -343,6 +349,7 @@ wait(void)
 void
 scheduler(void)
 {
+  struct lq_elem *e;
   struct proc *p = 0;
 
   for(;;){
@@ -356,9 +363,13 @@ scheduler(void)
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
-        continue;
+    for(;;){
+      if((e = lq_get(&pt_runnable))){
+        p = e->data;
+      }else{
+        p = &ptable.proc[NPROC];
+        break;
+      }
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
