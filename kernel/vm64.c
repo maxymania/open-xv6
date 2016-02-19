@@ -133,13 +133,14 @@ seginit(void)
 
 // Allocate a 4-level page table and return it the level-2 page table.
 static pde_t*
-setupkvm(pde_t** ppml4)
+setupkvm(void)
 {
   int i;
   pde_t *pml4 = (pde_t*) kalloc();
-  if(ppml4)*ppml4=pml4;
   pde_t *pdpt = (pde_t*) kalloc();
   pde_t *pgdir = (pde_t*) kalloc();
+
+  if(pml4==0 || pdpt==0 || pgdir==0) goto bad;
 
   memset(pml4, 0, PGSIZE);
   memset(pdpt, 0, PGSIZE);
@@ -152,15 +153,25 @@ setupkvm(pde_t** ppml4)
   pml4[0] = v2p(pdpt) | PTE_P | PTE_W | PTE_U;
   pdpt[0] = v2p(pgdir) | PTE_P | PTE_W | PTE_U;
 
-  return pgdir;
+  return pml4;
+  bad:
+  if(pml4)kfree((char *)pml4);
+  if(pdpt)kfree((char *)pdpt);
+  if(pgdir)kfree((char *)pgdir);
+  return 0;
 };
 
 pagetab_t*
 setupkvm_v2(void)
 {
   pagetab_t* pt = (pagetab_t*)kalloc();
-  if(pt)
-    pt->pgdir = setupkvm(&(pt->pml4));
+  if(pt){
+    pt->pml4 = setupkvm();
+    if(pt->pml4==0){
+      kfree(pt);
+      return 0;
+    }
+  }
   return pt;
 };
 

@@ -54,29 +54,32 @@ struct segdesc gdt[NSEGS];
 // that corresponds to virtual address va.  If alloc!=0,
 // create any required page table pages.
 static pte_t *
-walkpgdir(pde_t *pgdir, const void *va, int alloc)
-{
-  pde_t *pde;
-  pte_t *pgtab;
-
-  pde = &pgdir[PDX(va)];
-  if(*pde & PTE_P){
-    pgtab = (pte_t*)p2v(PTE_ADDR(*pde));
-  } else {
-    if(!alloc || (pgtab = (pte_t*)kalloc()) == 0)
-      return 0;
-    // Make sure all those PTE_P bits are zero.
-    memset(pgtab, 0, PGSIZE);
-    // The permissions here are overly generous, but they can
-    // be further restricted by the permissions in the page table 
-    // entries, if necessary.
-    *pde = v2p(pgtab) | PTE_P | PTE_W | PTE_U;
-  }
-  return &pgtab[PTX(va)];
-}
-static pte_t *
 walkpgdir_v2(pagetab_t* tab, const void *va, int alloc){
-  return walkpgdir(tab->pgdir,va,alloc);
+  pde_t entry;
+  pde_t *pml4 = tab->pml4;
+  pde_t *pdpt;
+  pde_t *pgdir;
+  pde_t *pgtab;
+
+  entry = pml4[PML4X(va)];
+  if(!(entry & PTE_P)) return 0;
+  pdpt = p2v(PTE_ADDR(entry));
+
+  entry = pdpt[PDPX(va)];
+  if(!(entry & PTE_P)) return 0;
+  pgdir = p2v(PTE_ADDR(entry));
+
+  entry = pgdir[PDX(va)];
+  if(!(entry & PTE_P)){
+    if(!alloc) return 0;
+    pgtab = (pde_t)kalloc();
+    if(pgtab == 0) return 0;
+    memset(pgtab, 0, PGSIZE);
+    pgdir[PDX(va)] = v2p(pgtab) | PTE_P | PTE_W | PTE_U;
+  }else
+    pgtab = p2v(PTE_ADDR(entry));
+
+  return &pgtab[PTX(va)];
 }
 
 // Create PTEs for virtual addresses starting at va that refer to
@@ -237,7 +240,7 @@ void
 freevm_v2(pagetab_t* tab){
   pde_t *pml4 = tab->pml4;
   pde_t *pdp;
-  pde_t *pgdir = tab->pgdir;
+  pde_t *pgdir;
   pde_t *pgtab;
   uint i,j,k;
   if(pgdir == 0)
@@ -259,14 +262,6 @@ freevm_v2(pagetab_t* tab){
     kfree((char*)pdp);
   }
   kfree((char*)pml4);
-
-  //for(i = 0; i < NPDENTRIES-2; i++){
-  //  if(pgdir[i] & PTE_P){
-  //    char * v = p2v(PTE_ADDR(pgdir[i]));
-  //    kfree(v);
-  //  }
-  //}
-  //kfree((char*)pgdir);
   kfree(tab);
 }
 

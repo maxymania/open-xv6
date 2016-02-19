@@ -100,13 +100,19 @@ struct segdesc {
 #define STS_IG32    0xE     // 32-bit Interrupt Gate
 #define STS_TG32    0xF     // 32-bit Trap Gate
 
-// A virtual address 'la' has a three-part structure as follows:
+// A virtual address has a five-part structure as follows:
 //
-// +--------10------+-------10-------+---------12----------+
-// | Page Directory |   Page Table   | Offset within Page  |
-// |      Index     |      Index     |                     |
-// +----------------+----------------+---------------------+
-//  \--- PDX(va) --/ \--- PTX(va) --/ 
+// +--------9-------+--------9-------+--------9-------+-------9--------+---------12----------+
+// | Page Map Level | Page Directory | Page Directory |   Page Table   | Offset within Page  |
+// |    4 Index     | Pointer Index  |      Index     |      Index     |                     |
+// +----------------+----------------+----------------+----------------+---------------------+
+//  \--PML4X(va) --/ \-- PDPX(va) --/ \--- PDX(va) --/ \--- PTX(va) --/ 
+
+// page map level 4 index
+#define PML4X(va)         (((uintp)(va) >> PML4XSHIFT) & PXMASK)
+
+// page directory pointer index
+#define PDPX(va)         (((uintp)(va) >> PDPXSHIFT) & PXMASK)
 
 // page directory index
 #define PDX(va)         (((uintp)(va) >> PDXSHIFT) & PXMASK)
@@ -118,7 +124,6 @@ struct segdesc {
 #define PGADDR(d, t, o) ((uintp)((d) << PDXSHIFT | (t) << PTXSHIFT | (o)))
 
 // Page directory and page table constants.
-#if X64
 #define NPDENTRIES      512     // # directory entries per page directory
 #define NPTENTRIES      512     // # PTEs per page table
 #define PGSIZE          4096    // bytes mapped by a page
@@ -126,19 +131,11 @@ struct segdesc {
 #define PGSHIFT         12      // log2(PGSIZE)
 #define PTXSHIFT        12      // offset of PTX in a linear address
 #define PDXSHIFT        21      // offset of PDX in a linear address
+#define PDPXSHIFT       30      // offset of PDPX in a linear address
+#define PML4XSHIFT      39      // offset of PML4X in a linear address
 
 #define PXMASK          0x1FF
-#else
-#define NPDENTRIES      1024    // # directory entries per page directory
-#define NPTENTRIES      1024    // # PTEs per page table
-#define PGSIZE          4096    // bytes mapped by a page
 
-#define PGSHIFT         12      // log2(PGSIZE)
-#define PTXSHIFT        12      // offset of PTX in a linear address
-#define PDXSHIFT        22      // offset of PDX in a linear address
-
-#define PXMASK          0x3FF
-#endif
 
 #define PGROUNDUP(sz)  (((sz)+((uintp)PGSIZE-1)) & ~((uintp)(PGSIZE-1)))
 #define PGROUNDDOWN(a) (((a)) & ~((uintp)(PGSIZE-1)))

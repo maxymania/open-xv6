@@ -5,7 +5,6 @@
 #include <gnrc/aptable.h>
 
 struct pagetab {
-	pde_t* pgdir;
 	pde_t* pml4;
 };
 
