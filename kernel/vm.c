@@ -235,18 +235,38 @@ deallocuvm_v2(pagetab_t* tab, uintp oldsz, uintp newsz){
 // in the user part.
 void
 freevm_v2(pagetab_t* tab){
+  pde_t *pml4 = tab->pml4;
+  pde_t *pdp;
   pde_t *pgdir = tab->pgdir;
-  uint i;
+  pde_t *pgtab;
+  uint i,j,k;
   if(pgdir == 0)
     panic("freevm: no pgdir");
   deallocuvm_v2(tab, 0x3fa00000, 0);
-  for(i = 0; i < NPDENTRIES-2; i++){
-    if(pgdir[i] & PTE_P){
-      char * v = p2v(PTE_ADDR(pgdir[i]));
-      kfree(v);
+  for(k = 0; k < 256; k++){
+    if(!(pml4[k] & PTE_P))continue;
+    pdp = p2v(PTE_ADDR(pml4[k]));
+    for(j = 0; j < 512; j++){
+      if(!(pdp[j] & PTE_P))continue;
+      pgdir = p2v(PTE_ADDR(pdp[j]));
+      for(i = 0; i < 510; i++){
+        if(!(pgdir[i] & PTE_P))continue;
+        pgtab = p2v(PTE_ADDR(pgdir[i]));
+        kfree((char*)pgtab);
+      }
+      kfree((char*)pgdir);
     }
+    kfree((char*)pdp);
   }
-  kfree((char*)pgdir);
+  kfree((char*)pml4);
+
+  //for(i = 0; i < NPDENTRIES-2; i++){
+  //  if(pgdir[i] & PTE_P){
+  //    char * v = p2v(PTE_ADDR(pgdir[i]));
+  //    kfree(v);
+  //  }
+  //}
+  //kfree((char*)pgdir);
   kfree(tab);
 }
 

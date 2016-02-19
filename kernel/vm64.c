@@ -131,15 +131,13 @@ seginit(void)
   ltr(SEG_TSS << 3);
 };
 
-// The core xv6 code only knows about two levels of page tables,
-// so we will create all four, but only return the second level.
-// because we need to find the other levels later, we'll stash
-// backpointers to them in the top two entries of the level two
-// table.
+// Allocate a 4-level page table and return it the level-2 page table.
 static pde_t*
-setupkvm(void)
+setupkvm(pde_t** ppml4)
 {
+  int i;
   pde_t *pml4 = (pde_t*) kalloc();
+  if(ppml4)*ppml4=pml4;
   pde_t *pdpt = (pde_t*) kalloc();
   pde_t *pgdir = (pde_t*) kalloc();
 
@@ -147,12 +145,12 @@ setupkvm(void)
   memset(pdpt, 0, PGSIZE);
   memset(pgdir, 0, PGSIZE);
   pml4[511] = v2p(kpdpt) | PTE_P | PTE_W | PTE_U;
-  pml4[0] = v2p(pdpt) | PTE_P | PTE_W | PTE_U;
-  pdpt[0] = v2p(pgdir) | PTE_P | PTE_W | PTE_U; 
 
-  // virtual backpointers
-  pgdir[511] = ((uintp) pml4) | PTE_P;
-  pgdir[510] = ((uintp) pdpt) | PTE_P;
+  for (i = 256; i < 511; i++) // Just copy!
+   pml4[i] = kpml4[i];
+
+  pml4[0] = v2p(pdpt) | PTE_P | PTE_W | PTE_U;
+  pdpt[0] = v2p(pgdir) | PTE_P | PTE_W | PTE_U;
 
   return pgdir;
 };
@@ -162,7 +160,7 @@ setupkvm_v2(void)
 {
   pagetab_t* pt = (pagetab_t*)kalloc();
   if(pt)
-    pt->pgdir = setupkvm();
+    pt->pgdir = setupkvm(&(pt->pml4));
   return pt;
 };
 
@@ -174,6 +172,7 @@ setupkvm_v2(void)
 void
 kvmalloc(void)
 {
+  void* tempmap;
   int n;
   kpml4 = (pde_t*) kalloc();
   kpdpt = (pde_t*) kalloc();
@@ -193,6 +192,14 @@ kvmalloc(void)
   }
   for (n = 0; n < 16; n++)
     iopgdir[n] = (DEVSPACE + (n << PDXSHIFT)) | PTE_PS | PTE_P | PTE_W | PTE_PWT | PTE_PCD;
+
+  // Pre-Map the higher half of the address space.
+  for (n = 256; n < 511; n++){
+   tempmap = kalloc();
+   memset(tempmap, 0, PGSIZE);
+   kpml4[n] = v2p(tempmap) | PTE_P | PTE_W;
+  }
+
   switchkvm();
 }
 
@@ -213,7 +220,7 @@ switchuvm(struct proc *p)
     panic("switchuvm: no Page Table");
   tss = (uint*) (((char*) cpu->local) + 1024);
   tss_set_rsp(tss, 0, (uintp)proc->kstack + KSTACKSIZE);
-  pml4 = (void*) PTE_ADDR(p->pagetable->pgdir[511]);
+  pml4 = (void*) PTE_ADDR(p->pagetable->pml4);
   lcr3(v2p(pml4));
   popcli();
 }
