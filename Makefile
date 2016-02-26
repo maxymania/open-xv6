@@ -263,7 +263,9 @@ qemu: fs.img xv6.img
 	$(QEMU) -serial mon:stdio $(QEMUOPTS)
 
 qemu-memfs: xv6memfs.img
-	$(QEMU) xv6memfs.img -smp $(CPUS)
+	$(QEMU) -serial mon:stdio -net none xv6memfs.img -smp $(CPUS) -m 512 $(QEMUEXTRA)
+#qemu-memfs: xv6memfs.img
+#	$(QEMU) xv6memfs.img -smp $(CPUS)
 
 qemu-nox: fs.img xv6.img
 	$(QEMU) -nographic $(QEMUOPTS)
