@@ -176,6 +176,13 @@ out/kernel.elf: $(OBJS) $(ENTRYCODE) out/entryother out/initcode $(LINKSCRIPT) $
 	$(OBJDUMP) -S out/kernel.elf > out/kernel.asm
 	$(OBJDUMP) -t out/kernel.elf | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > out/kernel.sym
 
+OBJSMEM = $(filter-out kobj/ide.o,$(OBJS)) kobj/memide.o
+
+out/kernelmemfs.elf: $(OBJSMEM) $(ENTRYCODE) out/entryother out/initcode $(LINKSCRIPT) fs.img
+	$(LD) $(LDFLAGS) -T $(LINKSCRIPT) -o out/kernelmemfs.elf $(ENTRYCODE) $(OBJSMEM) -b binary out/initcode out/entryother fs.img
+	$(OBJDUMP) -S out/kernelmemfs.elf > out/kernelmemfs.asm
+	$(OBJDUMP) -t out/kernelmemfs.elf | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > out/kernel.sym
+
 MKVECTORS = tools/vectors$(BITS).pl
 kernel/vectors.S: $(MKVECTORS)
 	perl $(MKVECTORS) > kernel/vectors.S
