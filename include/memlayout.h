@@ -18,17 +18,25 @@
 
 #ifndef __ASSEMBLER__
 
+// efficient constants!
+enum {
+	HIGHMEMOFF = HIGHMEMBASE - MAX_REGMEM,
+};
+
+#if 1
 static inline uintp v2p(void *a) {
 	uintp b = ((uintp) (a));
-	if((b<DEVBASE)&&(b>=HIGHMEMBASE))
-		return b - ((uintp)HIGHMEMBASE) + ((uintp)MAX_REGMEM);
-	return b - ((uintp)KERNBASE);
+	return b - ((uintp)(b<KERNBASE?HIGHMEMOFF:KERNBASE));
 }
 static inline void *p2v(uintp a) {
-	if(a<MAX_REGMEM)
-		return (void *) ((a) + ((uintp)KERNBASE));
-	return (void *) ((a) - ((uintp)MAX_REGMEM) + ((uintp)HIGHMEMBASE));
+	return (void *) ((a) + ((uintp)(a>MAX_REGMEM?HIGHMEMOFF:KERNBASE)));
 }
+#endif
+
+#if 0
+static inline uintp v2p(void *a) { return ((uintp) (a)) - ((uintp)KERNBASE); }
+static inline void *p2v(uintp a) { return (void *) ((a) + ((uintp)KERNBASE)); }
+#endif
 
 #define V2P(a) (((uintp) (a)) - KERNBASE)
 #define P2V(a) (((void *) (a)) + KERNBASE)
